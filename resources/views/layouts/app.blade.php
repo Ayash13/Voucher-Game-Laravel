@@ -22,32 +22,9 @@
 </head>
 
 <body class="bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
-    <nav class="bg-gray-800 p-4">
-        <div class="container mx-auto flex justify-between">
-            <div>
-                <a href="{{ url('/') }}" class="text-2xl font-bold">Beli Voucher Game</a>
-            </div>
-            <div class="flex space-x-4">
-                <a href="{{ url('/') }}" class="text-gray-200">Home</a>
-                <a href="{{ route('profile.edit') }}" class="text-gray-200">Profile</a>
-                @auth
-                    @if (auth()->user()->is_admin)
-                        <a href="{{ route('admin.history') }}" class="text-gray-200">Admin History</a>
-                    @else
-                        <a href="{{ route('history') }}" class="text-gray-200">History</a>
-                        <a href="{{ route('favorites.index') }}" class="text-gray-200">Favorites</a>
-                    @endif
-                    <form action="{{ route('logout') }}" method="POST" class="inline">
-                        @csrf
-                        <button type="submit" class="text-gray-200">Logout</button>
-                    </form>
-                @else
-                    <a href="{{ route('login') }}" class="text-gray-200">Login</a>
-                    <a href="{{ route('register') }}" class="text-gray-200">Register</a>
-                @endauth
-            </div>
-        </div>
-    </nav>
+    <!-- Navigation -->
+    @include('layouts.navigation')
+
     <main class="py-8">
         @yield('content')
     </main>
