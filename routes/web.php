@@ -1,10 +1,11 @@
 <?php
 
-use App\Http\Controllers\ProductController;
-use App\Http\Controllers\ProfileController;
+use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HistoryController;
 use App\Http\Controllers\PaymentController;
-use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\ProductController;
+use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\FavoriteController;
 
 // Welcome route to display all products
 Route::get('/', [ProductController::class, 'index'])->name('welcome');
@@ -16,6 +17,8 @@ Route::middleware(['auth'])->group(function () {
     Route::patch('/profile/password', [ProfileController::class, 'updatePassword'])->name('profile.update-password');
     Route::get('/history', [HistoryController::class, 'index'])->name('history');
     Route::get('/admin/history', [HistoryController::class, 'adminIndex'])->name('admin.history');
+    Route::get('/favorites', [FavoriteController::class, 'index'])->name('favorites.index');
+    Route::post('/favorites/toggle', [FavoriteController::class, 'toggle'])->name('favorites.toggle');
 
     // Admin routes for product management
     Route::middleware(['admin'])->group(function () {

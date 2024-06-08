@@ -5,9 +5,10 @@
         <div class="mt-8 bg-white dark:bg-gray-800 overflow-hidden shadow sm:rounded-lg">
             <div id="product-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 p-6">
                 @foreach ($products as $product)
-                    <div @click="showDetailModal = true; selectedProduct = {{ $product->toJson() }}"
+                    <div
                         class="relative bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden transform transition-transform hover:scale-105 cursor-pointer">
-                        <img src="{{ $product->image_url }}" alt="{{ $product->name }}" class="w-full object-cover">
+                        <img src="{{ $product->image_url }}" alt="{{ $product->name }}" class="w-full object-cover"
+                            @click="showDetailModal = true; selectedProduct = {{ $product->toJson() }}">
                         @auth
                             @if (auth()->user()->is_admin)
                                 <div class="absolute top-2 right-2 flex space-x-2">
@@ -23,11 +24,16 @@
                             @endif
                         @endauth
                         <div class="p-4">
-                            <h2 class="text-2xl font-bold text-gray-900 dark:text-white">{{ $product->name }}</h2>
+                            <h2 class="text-2xl font-bold text-gray-900 dark:text-white flex items-center justify-between">
+                                {{ $product->name }}
+                                <button @click.stop="toggleFavorite({{ $product->id_product }})" class="text-red-500 ml-2">
+                                    <i
+                                        :class="isFavorite({{ $product->id_product }}) ? 'fas fa-heart' : 'far fa-heart'"></i>
+                                </button>
+                            </h2>
                             <p class="mt-2 text-gray-600 dark:text-gray-400">{{ $product->description }}</p>
                             <p class="mt-2 font-bold text-gray-900 dark:text-white">Rp
-                                <span x-text="formatPrice({{ $product->price }})"></span>
-                            </p>
+                                {{ number_format($product->price / 1000, 3, ',', '.') }}</p>
                         </div>
                     </div>
                 @endforeach
@@ -59,7 +65,7 @@
                             <p class="mt-2 text-gray-600 dark:text-gray-400"
                                 x-text="selectedProduct ? selectedProduct.description : ''"></p>
                             <p class="mt-2 font-bold text-gray-900 dark:text-white">Rp <span
-                                    x-text="formatPrice(selectedProduct ? selectedProduct.price : '')"></span></p>
+                                    x-text="formatPrice(selectedProduct.price)"></span></p>
 
                             <div class="mt-4">
                                 <label for="custom_amount"
@@ -249,11 +255,38 @@
                 image_url: ''
             },
             products: @json($products),
+            favorites: @json($favorites),
+            isFavorite(productId) {
+                return this.favorites.includes(productId);
+            },
+            async toggleFavorite(productId) {
+                try {
+                    const response = await fetch(`{{ route('favorites.toggle') }}`, {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRF-TOKEN': document.querySelector(
+                                'meta[name="csrf-token"]').getAttribute('content'),
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            id_product: productId
+                        })
+                    });
+                    if (response.ok) {
+                        if (this.isFavorite(productId)) {
+                            this.favorites = this.favorites.filter(id => id !== productId);
+                        } else {
+                            this.favorites.push(productId);
+                        }
+                    } else {}
+                } catch (error) {}
+            },
             get totalPrice() {
                 if (this.customAmount) {
-                    return this.customAmount * this.selectedProduct.price;
+                    return (this.customAmount * this.selectedProduct.price / 1000).toFixed(3)
+                        .replace('.', ',');
                 }
-                return 0;
+                return (0).toFixed(3).replace('.', ',');
             },
             formatPrice(price) {
                 return (price / 1000).toFixed(3).replace('.', ',');
@@ -275,12 +308,8 @@
                             id);
                         this.showModal = false;
                         location.reload();
-                    } else {
-                        alert('Failed to delete the product.');
-                    }
-                } catch (error) {
-                    console.error('Error deleting product:', error);
-                }
+                    } else {}
+                } catch (error) {}
             },
             async addProduct() {
                 this.isLoading = true;
@@ -341,10 +370,7 @@
                     );
 
                     location.reload();
-                } catch (error) {
-                    console.error('Error editing product:', error);
-                    alert(error.message);
-                } finally {
+                } catch (error) {} finally {
                     this.isLoading = false;
                 }
             },
@@ -372,13 +398,9 @@
                         throw new Error(responseData.message || 'Failed to process the order.');
                     }
 
-                    alert('Order processed successfully.');
                     this.showDetailModal = false;
                     location.reload();
-                } catch (error) {
-                    console.error('Error processing order:', error);
-                    alert(error.message);
-                } finally {
+                } catch (error) {} finally {
                     this.isLoading = false;
                 }
             },

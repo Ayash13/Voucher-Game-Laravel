@@ -3,15 +3,22 @@
 namespace App\Http\Controllers;
 
 use App\Models\Product;
+use App\Models\Favorite;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 
 class ProductController extends Controller
 {
     public function index()
     {
         $products = Product::all();
-        return view('welcome', compact('products'));
+        $favorites = [];
+        if (Auth::check()) {
+            $favorites = Favorite::where('id_user', Auth::id())->pluck('id_product')->toArray();
+        }
+
+        return view('welcome', compact('products', 'favorites'));
     }
 
     public function store(Request $request)

@@ -35,6 +35,7 @@
                         <a href="{{ route('admin.history') }}" class="text-gray-200">Admin History</a>
                     @else
                         <a href="{{ route('history') }}" class="text-gray-200">History</a>
+                        <a href="{{ route('favorites.index') }}" class="text-gray-200">Favorites</a>
                     @endif
                     <form action="{{ route('logout') }}" method="POST" class="inline">
                         @csrf
