@@ -25,7 +25,9 @@
                         <div class="p-4">
                             <h2 class="text-2xl font-bold text-gray-900 dark:text-white">{{ $product->name }}</h2>
                             <p class="mt-2 text-gray-600 dark:text-gray-400">{{ $product->description }}</p>
-                            <p class="mt-2 font-bold text-gray-900 dark:text-white">Rp {{ $product->price }}</p>
+                            <p class="mt-2 font-bold text-gray-900 dark:text-white">Rp
+                                <span x-text="formatPrice({{ $product->price }})"></span>
+                            </p>
                         </div>
                     </div>
                 @endforeach
@@ -57,7 +59,7 @@
                             <p class="mt-2 text-gray-600 dark:text-gray-400"
                                 x-text="selectedProduct ? selectedProduct.description : ''"></p>
                             <p class="mt-2 font-bold text-gray-900 dark:text-white">Rp <span
-                                    x-text="selectedProduct ? selectedProduct.price : ''"></span></p>
+                                    x-text="formatPrice(selectedProduct ? selectedProduct.price : '')"></span></p>
 
                             <div class="mt-4">
                                 <label for="custom_amount"
@@ -252,6 +254,9 @@
                     return this.customAmount * this.selectedProduct.price;
                 }
                 return 0;
+            },
+            formatPrice(price) {
+                return (price / 1000).toFixed(3).replace('.', ',');
             },
             redirectToLogin() {
                 window.location.href = '{{ route('login') }}';
