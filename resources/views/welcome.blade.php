@@ -81,10 +81,10 @@
                                     Method</label>
                                 <select id="payment_method" x-model="paymentMethod"
                                     class="mt-1 block w-full rounded-md border-gray-300 shadow-sm dark:border-gray-600 dark:bg-gray-700">
-                                    <option value="e_wallet">E-Wallet</option>
-                                    <option value="qris">QRIS</option>
-                                    <option value="retail">Retail</option>
-                                    <option value="virtual_account">Virtual Account</option>
+                                    <option value="GOPAY">E-Wallet</option>
+                                    <option value="QRIS">QRIS</option>
+                                    <option value="Transfer BCA">Transfer BCA</option>
+                                    <option value="Alfamart">Alfamart</option>
                                 </select>
                             </div>
 
@@ -305,10 +305,7 @@
 
                     // Refresh the page
                     setTimeout(() => location.reload(), 100);
-                } catch (error) {
-                    console.error('Error adding product:', error);
-                    alert(error.message);
-                } finally {
+                } catch (error) {} finally {
                     this.isLoading = false;
                 }
             },
@@ -338,11 +335,7 @@
                         product
                     );
 
-                    // Close the modal
-                    this.showEditModal = false;
-
-                    // Show success message
-                    alert('Product updated successfully.');
+                    location.reload();
                 } catch (error) {
                     console.error('Error editing product:', error);
                     alert(error.message);
